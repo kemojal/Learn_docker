@@ -1,0 +1,42 @@
+version: "4.0"
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PW}
+        - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+      - "5431:5432"
+    restart: always
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: psql -U postgres -q -d postgres -c "SELECT 'ready';"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  pg-admin:
+    container_name: pg-admin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+      - PGADMIN_LISTEN_PORT=5050
+
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "8888:5050"
+
+volumes:
+  data:
+  pgadmin-data:
+# networks:
+#   default:
+#     driver: bridge
