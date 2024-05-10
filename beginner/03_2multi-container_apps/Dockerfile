@@ -6,9 +6,10 @@ WORKDIR /app
 COPY . /app
 
 # COPY requirements.txt /app
-# RUN pip3 install --no-cache-dir -r requirements.txt
-RUN pip3 install --no-cache-dir flask
+RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir flask
 
+ENTRYPOINT ["python"]
 
 EXPOSE 5000
 
