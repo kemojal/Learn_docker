@@ -1,0 +1,31 @@
+#docker-compose.yml
+
+version: "3.7"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000"
+    volumes:
+      - .:/app
+
+  database:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=fat_fat
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+    ports:
+      - "5433:5432"
+    # volumes:
+    #   - data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: psql -U postgres -q -d postgres -c "SELECT 'ready';"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  database:
