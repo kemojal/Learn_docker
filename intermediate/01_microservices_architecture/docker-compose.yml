@@ -1,4 +1,4 @@
-version: "3.8"
+version: "4.0"
 
 services:
   user-service:
@@ -6,7 +6,7 @@ services:
       context: ./user-service
       dockerfile: Dockerfile.user
     ports:
-      - "8001:8000"
+      - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://user_db:5432/users
 
@@ -15,10 +15,14 @@ services:
       context: ./product-service
       dockerfile: Dockerfile.product
     ports:
-      - "8002:8000"
+      - "8001:8000"
     environment:
       - DATABASE_URL=postgresql://product_db:5432/products
 
 networks:
   default:
     driver: bridge
+
+secrets:
+  DATABASE_URL:
+    external: true

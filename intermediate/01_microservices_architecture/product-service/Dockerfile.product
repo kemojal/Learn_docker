@@ -3,14 +3,13 @@
 # WORKDIR /usr/src/app
 
 # COPY requirements.txt ./
-# RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip3 install --no-cache-dir -r requirements.txt
 
 # COPY . .
 
 # EXPOSE 8000
 
 # CMD ["python", "app.py"]
-
 # Fetching the minified node image on apline linux
 FROM node:slim
 
@@ -31,3 +30,4 @@ CMD [ "node", "app.js" ]
 
 # Exposing server port
 EXPOSE 8000
+
