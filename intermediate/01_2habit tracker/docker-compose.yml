@@ -1,5 +1,7 @@
 version: "4.0"
+
 services:
+
   postgres:
     container_name: postgres_container
     image: postgres:latest
@@ -12,7 +14,7 @@ services:
     restart: always
     volumes:
       - data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
     healthcheck:
       test: psql -U postgres -q -d postgres -c "SELECT 'ready';"
@@ -33,10 +35,35 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - "8888:5050"
+  
+  express-server:
+    build:
+      context: ./express-server
+      dockerfile: Dockerfile.express
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user_db:5432/users
 
+  # product-service:
+  #   build:
+  #     context: ./product-service
+  #     dockerfile: Dockerfile.product
+  #   ports:
+  #     - "8001:8000"
+  #   environment:
+  #     - DATABASE_URL=postgresql://product_db:5432/products
+
+networks:
+  default:
+    driver: bridge
+
+secrets:
+  DATABASE_URL:
+    external: true
+
+
+# for postgresql
 volumes:
   data:
   pgadmin-data:
-# networks:
-#   default:
-#     driver: bridge

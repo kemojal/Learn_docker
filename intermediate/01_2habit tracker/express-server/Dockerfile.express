@@ -1,0 +1,33 @@
+# FROM python:3.9-slim
+
+# WORKDIR /usr/src/app
+
+# COPY requirements.txt ./
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# COPY . .
+
+# EXPOSE 8000
+
+# CMD ["python", "app.py"]
+
+# Fetching the minified node image on apline linux
+FROM node:slim
+
+# Declaring env
+ENV NODE_ENV development
+
+# Setting up the work directory
+WORKDIR /product-service
+
+# Copying all the files in our project
+COPY . .
+
+# Installing dependencies
+RUN npm install
+
+# Starting our application
+CMD [ "node", "app.js" ]
+
+# Exposing server port
+EXPOSE 8000
