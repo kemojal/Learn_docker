@@ -7,13 +7,16 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PW}
-        - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+      # - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
     ports:
       - "5432:5432"
     restart: always
-    volumes:
-      - data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    # volumes:
+    #   - data:./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+
+    # volumes:
+    #   - data:/var/lib/postgresql/data
+    #   - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
     healthcheck:
       test: psql -U postgres -q -d postgres -c "SELECT 'ready';"
@@ -42,7 +45,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://12345@postgres:5432/users
+      - DATABASE_URL=postgresql://12345@postgres:5432/postgres
+      - NODE_ENV=development
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PW=${POSTGRES_PW}
+      - POSTGRES_PORT=${POSTGRES_PORT}
 
   # product-service:
   #   build:

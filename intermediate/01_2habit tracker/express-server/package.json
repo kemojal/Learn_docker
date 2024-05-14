@@ -1,5 +1,5 @@
 {
-  "name": "user-service",
+  "name": "express_server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "dotenv": "16.4.5"
   }
 }

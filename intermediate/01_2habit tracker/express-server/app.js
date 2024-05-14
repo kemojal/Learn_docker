@@ -19,8 +19,9 @@ app.get("/", (req, res) => {
   res.send("Hello, World! Habit tracker");
 });
 
-router.get("/habits", async (req, res) => {
-  const { userId } = req.session; // Assuming you have implemented user authentication
+app.get("/habits", async (req, res) => {
+  // const { userId } = req.session; // Assuming you have implemented user authentication
+  const userId  = 1;
   try {
     const habits = await pool.query("SELECT * FROM habits WHERE user_id = $1", [
       userId,
@@ -33,8 +34,9 @@ router.get("/habits", async (req, res) => {
 });
 
 // Create a new habit
-router.post("/habits", async (req, res) => {
-  const { userId } = req.session;
+app.post("/habits", async (req, res) => {
+  // const { userId } = req.session;
+  const userId  = 1;
   const { name, targetDays } = req.body;
   try {
     const newHabit = await pool.query(
@@ -49,8 +51,9 @@ router.post("/habits", async (req, res) => {
 });
 
 // Mark a habit as completed for the current day
-router.post("/habits/:habitId/complete", async (req, res) => {
-  const { userId } = req.session;
+app.post("/habits/:habitId/complete", async (req, res) => {
+  // const { userId } = req.session;
+  const userId  = 1;
   const { habitId } = req.params;
   try {
     const habit = await pool.query(
@@ -72,8 +75,9 @@ router.post("/habits/:habitId/complete", async (req, res) => {
 });
 
 // Update a habit
-router.put("/habits/:habitId", async (req, res) => {
-  const { userId } = req.session;
+app.put("/habits/:habitId", async (req, res) => {
+  // const { userId } = req.session;
+  const userId  = 1;
   const { habitId } = req.params;
   const { name, targetDays } = req.body;
 
@@ -98,8 +102,9 @@ router.put("/habits/:habitId", async (req, res) => {
 });
 
 // Delete a habit
-router.delete("/habits/:habitId", async (req, res) => {
-  const { userId } = req.session;
+app.delete("/habits/:habitId", async (req, res) => {
+  // const { userId } = req.session;
+  const userId  = 1;
   const { habitId } = req.params;
 
   try {
