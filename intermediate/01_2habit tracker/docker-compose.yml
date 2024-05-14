@@ -24,7 +24,7 @@ services:
       start_period: 5s
 
   pg-admin:
-    container_name: pg-admin_container
+    container_name: express_pg-admin_container
     image: dpage/pgadmin4:latest
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
