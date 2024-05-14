@@ -1,8 +1,12 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
+const usersRoutes = require("./routes/users");
+const habitsRoutes = require("./routes/habits");
+require("dotenv").config();
 const port = process.env.PORT || 8000;
 
-const pool = require("./database");
+// const pool = require("./database");
 
 // Mock data for products
 const users = [
@@ -19,115 +23,36 @@ app.get("/", (req, res) => {
   res.send("Hello, World! Habit tracker");
 });
 
-app.get("/habits", async (req, res) => {
-  // const { userId } = req.session; // Assuming you have implemented user authentication
-  const userId  = 1;
-  try {
-    const habits = await pool.query("SELECT * FROM habits WHERE user_id = $1", [
-      userId,
-    ]);
-    res.json(habits.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//Habit tracking routes (protected)
+app.use("/api/habits", authenticateToken, habitsRoutes);
 
-// Create a new habit
-app.post("/habits", async (req, res) => {
-  // const { userId } = req.session;
-  const userId  = 1;
-  const { name, targetDays } = req.body;
-  try {
-    const newHabit = await pool.query(
-      "INSERT INTO habits (name, target_days, completed_days, user_id) VALUES ($1, $2, 0, $3) RETURNING *",
-      [name, targetDays, userId]
-    );
-    res.json(newHabit.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Mark a habit as completed for the current day
-app.post("/habits/:habitId/complete", async (req, res) => {
-  // const { userId } = req.session;
-  const userId  = 1;
-  const { habitId } = req.params;
-  try {
-    const habit = await pool.query(
-      "SELECT * FROM habits WHERE id = $1 AND user_id = $2",
-      [habitId, userId]
-    );
-    if (habit.rows.length === 0) {
-      return res.status(404).json({ error: "Habit not found" });
-    }
-    const updatedHabit = await pool.query(
-      "UPDATE habits SET completed_days = completed_days + 1 WHERE id = $1 AND user_id = $2 RETURNING *",
-      [habitId, userId]
-    );
-    res.json(updatedHabit.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Update a habit
-app.put("/habits/:habitId", async (req, res) => {
-  // const { userId } = req.session;
-  const userId  = 1;
-  const { habitId } = req.params;
-  const { name, targetDays } = req.body;
-
-  try {
-    const habit = await pool.query(
-      "SELECT * FROM habits WHERE id = $1 AND user_id = $2",
-      [habitId, userId]
-    );
-    if (habit.rows.length === 0) {
-      return res.status(404).json({ error: "Habit not found" });
-    }
-
-    const updatedHabit = await pool.query(
-      "UPDATE habits SET name = $1, target_days = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
-      [name, targetDays, habitId, userId]
-    );
-    res.json(updatedHabit.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Delete a habit
-app.delete("/habits/:habitId", async (req, res) => {
-  // const { userId } = req.session;
-  const userId  = 1;
-  const { habitId } = req.params;
-
-  try {
-    const habit = await pool.query(
-      "SELECT * FROM habits WHERE id = $1 AND user_id = $2",
-      [habitId, userId]
-    );
-    if (habit.rows.length === 0) {
-      return res.status(404).json({ error: "Habit not found" });
-    }
-
-    await pool.query("DELETE FROM habits WHERE id = $1 AND user_id = $2", [
-      habitId,
-      userId,
-    ]);
-    res.json({ message: "Habit deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+// User authentication routes
+app.use("/api/users", usersRoutes);
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+app.get('*', function(req, res){
+  res.send('what???', 404);
+});
+
+// Middleware function to authenticate JWT token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. No token provided." });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ error: "Invalid token" });
+    }
+
+    req.userId = decoded.userId;
+    next();
+  });
+}

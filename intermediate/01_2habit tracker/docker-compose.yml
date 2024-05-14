@@ -52,6 +52,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PW=${POSTGRES_PW}
       - POSTGRES_PORT=${POSTGRES_PORT}
+      - JWT_SECRET=${JWT_SECRET}
 
   # product-service:
   #   build:
